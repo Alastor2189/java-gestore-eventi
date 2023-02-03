@@ -2,20 +2,26 @@ package org.lessons.java.eventi;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
 
 public class Evento {
 	private String titolo;
 	private int postiTotali;
-	private int postiPrenotati;
+	private int postiPrenotati = 0;
 	private LocalDate data;
+	LocalDate dateNow = LocalDate.now();
 	
-	private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("gg/MM/yyyy, Ore: HH:mm");
+	
 
-	public Evento(String titolo, int postiTotali, in postiDisponibili) {
-		super();
+	public Evento(String titolo, LocalDate data, int postiTotali) throws Exception {
+		
+		this.data = data;
+		validData(data);
 		this.titolo = titolo;
-		this.postiTotali = 0;
-		this.postiPrenotati = postiDisponibili;
+		this.postiTotali = postiTotali;
+		validPosti(postiTotali);
+		this.postiPrenotati = postiPrenotati;
 	}
 
 	public String getTitolo() {
@@ -26,13 +32,18 @@ public class Evento {
 		return postiTotali;
 	}
 
-	public int getPostiDisponibili() {
+	public int getPostiPrenotati() {
 		return postiPrenotati;
+		
+	}
+	
+	public int postiDisponibili() {
+		return postiTotali - postiPrenotati;
 	}
 
-	public static DateTimeFormatter getDtf() {
-		return dtf;
-	}
+	
+		
+	
 
 	public void setPostiTotali(int postiTotali) {
 		this.postiTotali = postiTotali;
@@ -42,29 +53,47 @@ public class Evento {
 		this.postiPrenotati = postiDisponibili;
 	}
 	
+	public void setData(LocalDate data) {
+
+		this.data = data;
+	
+	//VALIDATORI
+	
+	
+	
+	 public void validData(LocalDate data) throws Exception {
+		 if (data.isBefore(dateNow))
+			 throw new Exception();
+	 }
+	 
+	 private void validPosti(int postiTotali) throws IllegalArgumentException {
+	        if (postiTotali<1)
+	            throw new IllegalArgumentException("Ci deve essere almeno un posto");
+	    }
+	
 	//METODI
 	
-	public void prenota() throws Exception {
-		if(LocalDate.now()isAfter(data)) {
-			throw new Exception("Evento già concluso, prenotazioni chiuse");
-		} else if (postiTotali == postiPrenotati) {
-			throw new Exception("Evento già al completo, nessun posto disponibile");
-		} else
-			postiPrenotati++;
+	public void prenotaEvento(LocalDate data) throws Exception {
+		if (dateNow.isBefore(data))
+			throw new Exception();
+		if (postiTotali <= postiPrenotati)
+			throw new Exception();
+		postiPrenotati++;
 	}
 	
-	public void disdettaPrenotazione() throws Exception {
-		if(LocalDate.now().isAfter(data)) {
-			throw new Exception("Evento concluso, impossibile disdire");
-		} else if (postiPrenotati<1) {
-			throw new Exception("Non ci sono prenotazioni per questo evento");
-		} else
-			postiPrenotati--;
+	public void disdiciEvento(LocalDate data) throws Exception {
+		if (dateNow.isBefore(data))
+			throw new Exception();
+		if (postiPrenotati < 1)
+			throw new Exception();
+		postiPrenotati--;
 	}
 
 	@Override
 	public String toString() {
-		return "Evento [titolo=" + titolo + ", data=" + data + "]";
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy").withLocale(Locale.ITALY);
+		String dateF = data.format(dtf);
+		return "Evento [titolo=" + titolo + ", data=" + dateF + "]";
 	}
 	
 	
